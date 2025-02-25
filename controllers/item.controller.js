@@ -117,27 +117,18 @@ export const getItems = async (req, res) => {
 // }
 
 
-// export const getItemWithImageById = async (req, res) => {
-//     const itemId = req.params.id
-//     try {
-//         const itemData = await Item.findById(itemId).populate('category').populate('images');
-//         let imgArray = []
-//         await Promise.all(
-//             itemData?.images.map(async img => {
-//                 if (img.gridfsId) {
-//                     await imageRetriever(img, imgArray)
-//                 }
-//             })
-//         )
-//         itemData.images = imgArray
-//         res.json(itemData);
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({
-//             message: 'Error retrieving items'
-//         });
-//     }
-// }
+export const getItemWithImageById = async (req, res) => {
+    const itemId = req.params.id
+    try {
+        const itemData = await Item.findById(itemId).select('image');
+        res.json(itemData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Error retrieving items'
+        });
+    }
+}
 
 
 export const getItemById = async (req, res) => {
