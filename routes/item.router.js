@@ -3,8 +3,6 @@ import {
     addItem,
     getItemById,
     getItems,
-    getItemsWithImage,
-    getItemWithImageById,
     updateItem,
     updateItemStatus,
 } from '../controllers/item.controller.js'
@@ -14,8 +12,6 @@ const router = express.Router()
 router.use(requireAuth)
 
 router.get('/', getItems)
-router.get('/with-image', getItemsWithImage)
-router.get('/with-image/:id', getItemWithImageById)
 router.get('/:id', getItemById)
 router.post('/', addItem)
 router.put('/', updateItem)

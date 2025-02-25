@@ -6,8 +6,6 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 
 import itemRouter from './routes/item.router.js'
-import categoryRouter from './routes/category.router.js'
-import imageRouter from './routes/image.router.js'
 import authRouter from './routes/auth.router.js'
 import adminRouter from './routes/admin.router.js'
 
@@ -28,19 +26,13 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRouter)
 app.use('/api/item', itemRouter)
-app.use('/api/category', categoryRouter)
-app.use('/api/image', imageRouter)
 app.use('/api/admin', adminRouter)
 
-let gfs;
 db.once('open', () => {
     console.log('\x1b[36m%s\x1b[0m', '----------------------------------------------------------------------------------------')
     console.log('\x1b[36m%s\x1b[0m', 'DB connection successful')
-    gfs = new mongoose.mongo.GridFSBucket(db.db)
     app.listen(port, () => {
-        console.log('\x1b[36m%s\x1b[0m',`Pin at Ranchi server is listening on port ${port}`)
+        console.log('\x1b[36m%s\x1b[0m', `Pin at Ranchi server is listening on port ${port}`)
         console.log('\x1b[36m%s\x1b[0m', '----------------------------------------------------------------------------------------')
     })
 })
-
-export { gfs }
