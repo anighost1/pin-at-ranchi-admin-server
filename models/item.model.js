@@ -6,11 +6,6 @@ const itemSchema = new Schema({
         type: String,
         required: true
     },
-    category: {
-        type: mongoose.Types.ObjectId,
-        ref:'Category',
-        required: true
-    },
     longitude: {
         type: Number,
         min: -180,
@@ -44,14 +39,11 @@ const itemSchema = new Schema({
         type: Number,
         required: true,
         validate: {
-            validator: function(v) {
+            validator: function (v) {
                 return /^\d{6}$/.test(v);
             },
             message: props => `${props.value} is not a valid 6-digit pin code!`
         }
-    },
-    map: {
-        type: String
     },
     mobile: {
         type: String,
@@ -75,16 +67,10 @@ const itemSchema = new Schema({
         type: Array,
         required: true,
     },
-},{ toJSON: { virtuals: true } });
-
-
-itemSchema.virtual('images', {
-    ref: 'Image', // Model to reference
-    localField: '_id', // Field from Item model
-    foreignField: 'itemId', // Field from Image model
-    justOne: false, // Set to true if each item has only one image
+    image: {
+        type: Array
+    },
 });
-
 
 
 const Item = mongoose.model('Item', itemSchema)

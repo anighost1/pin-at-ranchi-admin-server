@@ -3,7 +3,7 @@ import {
     addItem,
     getItemById,
     getItems,
-    getItemsWithImage,
+    // getItemsWithImage,
     getItemWithImageById,
     updateItem,
     updateItemStatus,
@@ -14,8 +14,8 @@ const router = express.Router()
 router.use(requireAuth)
 
 router.get('/', getItems)
-router.get('/with-image', getItemsWithImage)
-router.get('/with-image/:id', getItemWithImageById)
+// router.get('/with-image', getItemsWithImage)
+router.get('/image/:id', getItemWithImageById)
 router.get('/:id', getItemById)
 router.post('/', addItem)
 router.put('/', updateItem)

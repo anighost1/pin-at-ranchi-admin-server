@@ -3,16 +3,15 @@ import upload from '../config/imageUploadConfig.js'
 import requireAuth from '../middleware/requireAuth.js'
 import {
     addImage,
-    getImagesByItemId
 } from '../controllers/image.controller.js'
+import multerErrorHandler from '../lib/multerErrorHandler.js'
 
 
 const router = express.Router()
 router.use(requireAuth)
 
+router.post('/', upload.array('itemImage'), multerErrorHandler, addImage)
 
-router.get('/by-item/all/:id', getImagesByItemId)
-router.post('/', upload.array('itemImage'), addImage)
-
+router.use(multerErrorHandler);
 
 export default router

@@ -1,35 +1,9 @@
-import Image from "../models/image.model.js";
-import imageRetriever from "../service/imageRetriever.js";
-import { fs } from "memfs";
-import { gfs } from "../index.js";
-import { Readable } from 'stream'
-import generateUniqueFileName from "../service/randomNameGenerator.js";
-
-
-export const getImagesByItemId = async (req, res) => {
-    const itemId = req.params.id
-    let imgArray = []
-    try {
-        const imgData = await Image.find({ itemId });
-        await Promise.all(
-            imgData.map(async (img) => {
-                await imageRetriever(img, imgArray)
-            })
-        );
-        fs.unlinkSync('/outputFile');
-        // console.log(imgArray)
-        res.json(imgArray)
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: 'Error retrieving Images'
-        });
-    }
-}
-
+import { imageUploader } from "../lib/imageUploader.js";
+import Item from "../models/item.model.js";
 
 export const addImage = async (req, res) => {
     const imageData = req.files
+    const id = req.body.itemId
     // console.log(imageData)
     if (imageData.length < 1) {
         res.status(404).json({
@@ -38,28 +12,32 @@ export const addImage = async (req, res) => {
         return
     }
     try {
-        await Promise.all(
-            imageData.map((item) => {
-                const uploadStream = gfs.openUploadStream(generateUniqueFileName(item.originalname))
-                const readStream = Readable.from(item.buffer)
-                const result = readStream.pipe(uploadStream)
-                uploadStream.once('finish', () => {
-                    console.log(uploadStream.id)
-                    delete item.buffer
-                    console.log(item)
-                    console.log(req.body)
-                    new Image({
-                        gridfsId: uploadStream.id,
-                        ...item,
-                        ...req.body
-                    }).save()
-                })
-            })
-        )
+        const docPaths = await imageUploader(imageData)
+        const item = await Item.findById(id);
+        item.image.push(...docPaths);
+        await item.save();
         res.status(200).json({
             message: 'Image(s) successfully uploaded',
         })
     } catch (e) {
+        if (e instanceof multer.MulterError) {
+            let message;
+            switch (e.code) {
+                case 'LIMIT_FILE_SIZE':
+                    message = 'File size exceeds the allowed limit (2MB).';
+                    break;
+                case 'LIMIT_UNEXPECTED_FILE':
+                    message = 'Unexpected file type.';
+                    break;
+                default:
+                    message = 'File upload error.';
+                    break;
+            }
+            return res.status(400).json({
+                success: false,
+                message,
+            });
+        }
         if (e.name === 'ValidationError') {
             const validationErrors = Object.values(e.errors).map(err => err.message);
             res.status(400).json({
