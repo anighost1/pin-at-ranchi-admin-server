@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser'
 import itemRouter from './routes/item.router.js'
 import authRouter from './routes/auth.router.js'
 import adminRouter from './routes/admin.router.js'
+import imageRouter from './routes/image.router.js'
 
 const app = express()
 app.use(express.json())
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRouter)
 app.use('/api/item', itemRouter)
 app.use('/api/admin', adminRouter)
+app.use('/api/image', imageRouter)
 
 db.once('open', () => {
     console.log('\x1b[36m%s\x1b[0m', '----------------------------------------------------------------------------------------')
